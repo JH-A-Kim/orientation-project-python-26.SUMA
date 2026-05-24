@@ -75,7 +75,8 @@ def test_skill():
 
 def test_delete_experience():
     """
-    Add an experience, delete it by returned index id, and verify count goes down and does not contain the specific experience added.
+    Add an experience, delete it by returned index id, 
+    and verify count goes down and does not contain the specific experience added.
     """
     client = app.test_client()
 
@@ -105,7 +106,10 @@ def test_delete_experience():
     assert len(after.json) == before_count
 
     assert not any(
-        exp for exp in after.json if exp['title'] == example_experience['title'] and exp['company'] == example_experience['company']
-        and exp['start_date'] == example_experience['start_date'] and exp['end_date'] == example_experience['end_date']
-        and exp['description'] == example_experience['description'] and exp['logo'] == example_experience['logo']
+        exp for exp in after.json if exp['title'] == example_experience['title'] and
+        exp['company'] == example_experience['company'] and
+        exp['start_date'] == example_experience['start_date'] and
+        exp['end_date'] == example_experience['end_date'] and
+        exp['description'] == example_experience['description'] and 
+        exp['logo'] == example_experience['logo']
     )
