@@ -75,6 +75,11 @@ def skill():
         return jsonify({})
 
     if request.method == 'POST':
-        return jsonify({})
+        try:
+            new_skill = Skill(**request.get_json())
+        except (TypeError, ValueError):
+            return jsonify({"error": "Invalid skill payload"}), 400
+        data["skill"].append(new_skill)
+        return jsonify({"id": len(data["skill"]) - 1})
 
     return jsonify({})
