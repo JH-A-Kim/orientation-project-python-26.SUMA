@@ -98,10 +98,12 @@ def education():
     Handles education requests
     '''
     if request.method == 'GET':
-        return jsonify({})
+        return jsonify([asdict(entry) for entry in data['education']])
 
     if request.method == 'POST':
-        return jsonify({})
+        education_entry = Education(**request.get_json())
+        data['education'].append(education_entry)
+        return jsonify({'id': len(data['education']) - 1})
 
     return jsonify({})
 
