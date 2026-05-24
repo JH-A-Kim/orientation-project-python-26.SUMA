@@ -110,6 +110,6 @@ def test_delete_experience():
         exp['company'] == example_experience['company'] and
         exp['start_date'] == example_experience['start_date'] and
         exp['end_date'] == example_experience['end_date'] and
-        exp['description'] == example_experience['description'] and 
+        exp['description'] == example_experience['description'] and
         exp['logo'] == example_experience['logo']
     )
