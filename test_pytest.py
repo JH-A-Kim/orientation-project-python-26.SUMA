@@ -74,25 +74,38 @@ def test_skill():
     assert response.json[item_id] == example_skill
 
 def test_delete_experience():
-    '''
-    Add a new experience and then delete it. 
-    
-    Check that it is no longer in the list of experiences
-    '''
+    """
+    Add an experience, delete it by returned index id, and verify count goes down and does not contain the specific experience added.
+    """
+    client = app.test_client()
+
     example_experience = {
-        "title": "Software Developer",
-        "company": "A Cooler Company",
+        "title": "Software Developer for deleting",
+        "company": "Delete Test Co 123",
         "start_date": "October 2022",
         "end_date": "Present",
         "description": "Writing JavaScript Code",
         "logo": "example-logo.png"
     }
 
-    item_id = app.test_client().post('/resume/experience',
-                                     json=example_experience).json['id']
+    before = client.get('/resume/experience')
+    assert before.status_code == 200
+    before_count = len(before.json)
 
-    response = app.test_client().delete('/resume/experience', json={"id": item_id})
-    assert response.status_code == 200
+    post_response = client.post('/resume/experience', json=example_experience)
+    assert post_response.status_code == 200
+    item_id = post_response.json['id']
 
-    response = app.test_client().get('/resume/experience')
-    assert item_id not in response.json
+    delete_response = client.delete('/resume/experience', json={"id": item_id})
+    assert delete_response.status_code == 200
+    assert delete_response.json["deleted"] == item_id
+
+    after = client.get('/resume/experience')
+    assert after.status_code == 200
+    assert len(after.json) == before_count
+
+    assert not any(
+        exp for exp in after.json if exp['title'] == example_experience['title'] and exp['company'] == example_experience['company']
+        and exp['start_date'] == example_experience['start_date'] and exp['end_date'] == example_experience['end_date']
+        and exp['description'] == example_experience['description'] and exp['logo'] == example_experience['logo']
+    )
