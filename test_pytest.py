@@ -222,3 +222,100 @@ def test_user_info_invalid_phone():
     response = client.put('/resume/user_info', json=invalid_phone_info)
     assert response.status_code == 400
     assert "Phone number must include international country code" in response.json["error"]
+
+def test_experience_missing_field():
+    '''
+    Test POST request to experience with missing fields
+    '''
+    example_experience = {
+        "title": "Software Developer",
+        "company": "A Cooler Company",
+        "start_date": "October 2022",
+        "end_date": "Present",
+        "description": "Writing JavaScript Code"
+    }
+
+    response = app.test_client().post('/resume/experience', json=example_experience)
+    assert response.status_code == 400
+    assert response.json['error'] == "Missing required fields"
+
+def test_education_missing_field():
+    '''
+    Test POST request to education with missing fields
+    '''
+    example_education = {
+        "course": "Engineering",
+        "school": "NYU",
+        "start_date": "October 2022",
+        "end_date": "August 2024",
+        "grade": "86%"
+    }
+
+    response = app.test_client().post('/resume/education', json=example_education)
+    assert response.status_code == 400
+    assert response.json['error'] == "Missing required fields"
+
+def test_skill_missing_field():
+    '''
+    Test POST request to skill with missing fields
+    '''
+    example_skill = {
+        "name": "JavaScript",
+        "proficiency": "2-4 years"
+    }
+
+    response = app.test_client().post('/resume/skill', json=example_skill)
+    assert response.status_code == 400
+    assert response.json['error'] == "Missing required fields"
+
+def test_experience_invalid_format():
+    '''
+    Test POST request to experience with invalid format (extra fields)
+    '''
+    example_experience = {
+        "title": "Software Developer",
+        "company": "A Cooler Company",
+        "start_date": "October 2022",
+        "end_date": "Present",
+        "description": "Writing JavaScript Code",
+        "logo": "example-logo.png",
+        "extra_field": "This should fail"
+    }
+
+    response = app.test_client().post('/resume/experience', json=example_experience)
+    assert response.status_code == 400
+    assert response.json['error'] == "Invalid format"
+
+def test_education_invalid_format():
+    '''
+    Test POST request to education with invalid format (extra fields)
+    '''
+    example_education = {
+        "course": "Engineering",
+        "school": "NYU",
+        "start_date": "October 2022",
+        "end_date": "August 2024",
+        "grade": "86%",
+        "logo": "example-logo.png",
+        "extra_field": "This should fail"
+    }
+
+    response = app.test_client().post('/resume/education', json=example_education)
+    assert response.status_code == 400
+    assert response.json['error'] == "Invalid format"
+
+def test_skill_invalid_format():
+    '''
+    Test POST request to skill with invalid format (passing a list instead of dict)
+    '''
+    example_skill = [
+        {
+            "name": "JavaScript",
+            "proficiency": "2-4 years",
+            "logo": "example-logo.png"
+        }
+    ]
+
+    response = app.test_client().post('/resume/skill', json=example_skill)
+    assert response.status_code == 400
+    assert response.json['error'] == "Missing required fields"
