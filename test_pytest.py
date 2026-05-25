@@ -55,6 +55,26 @@ def test_education():
     assert response.json[item_id] == example_education
 
 
+def test_education_by_index():
+    '''
+    Get a specific education by index.
+
+    Check that it returns the expected education in JSON format
+    '''
+    expected_education = {
+        "course": "Computer Science",
+        "school": "University of Tech",
+        "start_date": "September 2019",
+        "end_date": "July 2022",
+        "grade": "80%",
+        "logo": "example-logo.png"
+    }
+
+    response = app.test_client().get('/resume/education/0')
+    assert response.status_code == 200
+    assert response.json == expected_education
+
+
 def test_skill():
     '''
     Add a new skill and then get all skills. 
