@@ -101,10 +101,16 @@ def get_experience(index):
     return jsonify({"error": "Experience not found"}), 404
 
 @app.route('/resume/education', methods=['GET', 'POST'])
-def education():
+@app.route('/resume/education/<int:index>', methods=['GET'])
+def education(index=None):
     '''
     Handles education requests
     '''
+    if request.method == 'GET' and index is not None:
+        if 0 <= index < len(data['education']):
+            return jsonify(asdict(data['education'][index]))
+        return jsonify({"error": "Education not found"}), 404
+
     if request.method == 'GET':
         return jsonify([asdict(entry) for entry in data['education']])
 
