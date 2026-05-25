@@ -109,7 +109,7 @@ def education():
 
 
 @app.route('/resume/skill', methods=['GET', 'POST', 'DELETE'])
-def skill():
+def skill(): # pylint: disable=too-many-return-statements
     '''
     Handles Skill requests
     '''
