@@ -108,7 +108,7 @@ def education():
     return jsonify({})
 
 
-@app.route('/resume/skill', methods=['GET', 'POST'])
+@app.route('/resume/skill', methods=['GET', 'POST', 'DELETE'])
 def skill():
     '''
     Handles Skill requests
@@ -132,5 +132,19 @@ def skill():
             return jsonify({"error": "Invalid skill payload"}), 400
         data["skill"].append(new_skill)
         return jsonify({"id": len(data["skill"]) - 1})
-
+    if request.method == 'DELETE':
+        return _delete_skill(request.get_json())
     return jsonify({})
+
+def _delete_skill(body):
+    if not body or 'id' not in body:
+        return jsonify({"error": "ID is required for deletion"}), 400
+    try:
+        item_id = int(body['id'])
+    except (ValueError, TypeError):
+        return jsonify({"error": "ID must be an integer"}), 400
+    if item_id < 0 or item_id >= len(data["skill"]):
+        return jsonify({"error": "ID is out of range"}), 404
+    data["skill"].pop(item_id)
+    return jsonify({"deleted": item_id})
+    
