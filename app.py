@@ -167,4 +167,3 @@ def _delete_experience(body):
         return jsonify({"error": "ID out of range"}), 404
     data['experience'].pop(item_id)
     return jsonify({"deleted": item_id}), 200
-  
