@@ -40,7 +40,7 @@ def hello_world():
     return jsonify({"message": "Hello, World!"})
 
 
-@app.route('/resume/experience', methods=['GET', 'POST'])
+@app.route('/resume/experience', methods=['GET', 'POST', 'DELETE'])
 def experience():
     '''
     Handle experience requests
@@ -72,6 +72,8 @@ def experience():
         index = len(data['experience']) - 1
         return jsonify({"id": index})
 
+    if request.method == 'DELETE':
+        return _delete_experience(request.get_json())
     return jsonify({})
 
 
@@ -109,7 +111,7 @@ def education():
 
 
 @app.route('/resume/skill', methods=['GET', 'POST'])
-def skill():
+def skill(): # pylint: disable=too-many-return-statements
     '''
     Handles Skill requests
     '''
@@ -134,3 +136,15 @@ def skill():
         return jsonify({"id": len(data["skill"]) - 1})
 
     return jsonify({})
+
+def _delete_experience(body):
+    if not body or 'id' not in body:
+        return jsonify({"error": "ID is required for deletion"}), 400
+    try:
+        item_id = int(body['id'])
+    except (ValueError, TypeError):
+        return jsonify({"error": "ID must be an integer"}), 400
+    if item_id < 0 or item_id >= len(data["experience"]):
+        return jsonify({"error": "ID is out of range"}), 400
+    data["experience"].pop(item_id)
+    return jsonify({"deleted": item_id}), 200
