@@ -132,7 +132,7 @@ def _post_skill():
     return jsonify({"id": len(data["skill"]) - 1})
 
 
-@app.route('/resume/skill', methods=['GET', 'POST'])
+@app.route('/resume/skill', methods=['GET', 'POST', 'DELETE'])
 def skill(): # pylint: disable=too-many-return-statements
     '''
     Handles Skill requests
@@ -141,6 +141,8 @@ def skill(): # pylint: disable=too-many-return-statements
         return _get_skill()
     if request.method == 'POST':
         return _post_skill()
+    if request.method == 'DELETE':
+        return _delete_skill(request.get_json())
     return jsonify({})
 
 def _delete_experience(body):
@@ -153,4 +155,16 @@ def _delete_experience(body):
     if item_id < 0 or item_id >= len(data["experience"]):
         return jsonify({"error": "ID is out of range"}), 400
     data["experience"].pop(item_id)
+    return jsonify({"deleted": item_id}), 200
+
+def _delete_skill(body):
+    if not body or 'id' not in body:
+        return jsonify({"error": "ID is required for deletion"}), 400
+    try:
+        item_id = int(body['id'])
+    except (ValueError, TypeError):
+        return jsonify({"error": "ID must be an integer"}), 400
+    if item_id < 0 or item_id >= len(data["skill"]):
+        return jsonify({"error": "ID is out of range"}), 400
+    data["skill"].pop(item_id)
     return jsonify({"deleted": item_id}), 200
