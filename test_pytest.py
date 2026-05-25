@@ -104,7 +104,6 @@ def test_delete_skill():
     after = client.get('/resume/skill')
     assert after.status_code == 200
     assert len(after.json) == before_count
-    
     assert not any(
         skill for skill in after.json if skill['name'] == example_skill['name']
         and skill['proficiency'] == example_skill['proficiency']
@@ -141,7 +140,6 @@ def test_delete_experience():
     after = client.get('/resume/experience')
     assert after.status_code == 200
     assert len(after.json) == before_count
-    
     assert not any(
         exp for exp in after.json if exp['title'] == example_experience['title'] and
         exp['company'] == example_experience['company'] and
