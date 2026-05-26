@@ -128,8 +128,8 @@ def _post_education():
 
     data['education'].append(education_entry)
     return jsonify({'id': len(data['education']) - 1})
-
-@app.route('/resume/education/<int:index>', methods=['GET', 'POST', 'DELETE'])
+@app.route('/resume/education', methods=['GET', 'POST', 'DELETE'])
+@app.route('/resume/education/<int:index>', methods=['GET'])
 def education(index=None):
     '''
     Handles education requests
