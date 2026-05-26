@@ -66,14 +66,19 @@ def experience():
         return jsonify(experience_list)
 
     if request.method == 'POST':
-        new_experience = Experience(
-            title=request.json['title'],
-            company=request.json['company'],
-            start_date=request.json['start_date'],
-            end_date=request.json['end_date'],
-            description=request.json['description'],
-            logo=request.json['logo']
-        )
+        req = request.get_json()
+
+        required_fields = ["title", "company", "start_date", "end_date", "description", "logo"]
+        if not req or not isinstance(req, dict) or any(
+            field not in req for field in required_fields
+        ):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        try:
+            new_experience = Experience(**req)
+        except TypeError:
+            return jsonify({"error": "Invalid format"}), 400
+
         data['experience'].append(new_experience)
         index = len(data['experience']) - 1
         return jsonify({"id": index})
@@ -100,24 +105,41 @@ def get_experience(index):
         })
     return jsonify({"error": "Experience not found"}), 404
 
+def _get_education(index):
+    if index is not None:
+        if 0 <= index < len(data['education']):
+            return jsonify(asdict(data['education'][index]))
+        return jsonify({"error": "Education not found"}), 404
+    return jsonify([asdict(entry) for entry in data['education']])
+
+def _post_education():
+    req = request.get_json()
+
+    required_fields = ["course", "school", "start_date", "end_date", "grade", "logo"]
+    if not req or not isinstance(req, dict) or any(
+        field not in req for field in required_fields
+    ):
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        education_entry = Education(**req)
+    except TypeError:
+        return jsonify({"error": "Invalid format"}), 400
+
+    data['education'].append(education_entry)
+    return jsonify({'id': len(data['education']) - 1})
+
 @app.route('/resume/education', methods=['GET', 'POST'])
 @app.route('/resume/education/<int:index>', methods=['GET'])
 def education(index=None):
     '''
     Handles education requests
     '''
-    if request.method == 'GET' and index is not None:
-        if 0 <= index < len(data['education']):
-            return jsonify(asdict(data['education'][index]))
-        return jsonify({"error": "Education not found"}), 404
-
     if request.method == 'GET':
-        return jsonify([asdict(entry) for entry in data['education']])
+        return _get_education(index)
 
     if request.method == 'POST':
-        education_entry = Education(**request.get_json())
-        data['education'].append(education_entry)
-        return jsonify({'id': len(data['education']) - 1})
+        return _post_education()
 
     return jsonify({})
 
@@ -136,10 +158,18 @@ def _get_skill():
 
 
 def _post_skill():
+    req = request.get_json()
+    required_fields = ["name", "proficiency", "logo"]
+    if not req or not isinstance(req, dict) or any(
+        field not in req for field in required_fields
+    ):
+        return jsonify({"error": "Missing required fields"}), 400
+
     try:
-        new_skill = Skill(**request.get_json())
-    except (TypeError, ValueError):
-        return jsonify({"error": "Invalid skill payload"}), 400
+        new_skill = Skill(**req)
+    except TypeError:
+        return jsonify({"error": "Invalid format"}), 400
+
     data["skill"].append(new_skill)
     return jsonify({"id": len(data["skill"]) - 1})
 
